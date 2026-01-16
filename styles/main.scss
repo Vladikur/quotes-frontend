@@ -1,0 +1,18 @@
+@use 'normalize.css/normalize.css';
+@use 'base/colors.scss';
+//@use 'base/typography.scss';
+
+@import 'vfonts/Lato.css';
+@import 'vfonts/FiraCode.css';
+
+
+
+// твои глобальные стили
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont;
+  background-color: var(--app-background);
+
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-color);
+}
