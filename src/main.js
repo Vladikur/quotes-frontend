@@ -6,6 +6,7 @@ import App from './App.vue'
 
 import naive from 'naive-ui';
 
+import '/styles/base/fonts.scss';
 import '/styles/main.scss';
 
 const app = createApp(App)

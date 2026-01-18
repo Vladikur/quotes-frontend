@@ -10,6 +10,8 @@ import {
   NIcon,
   NPagination,
   useMessage,
+  NCollapse,
+  NCollapseItem,
 } from 'naive-ui'
 import { SearchOutlined } from '@vicons/material'
 
@@ -92,7 +94,7 @@ async function onPageChange(newPage) {
       <img src="/gold-boat.png" alt="Gold boat" />
     </div>
 
-    <n-h1 style="text-align: center">Поиск цитат</n-h1>
+    <n-h1 class="quotes-title" style="text-align: center">Поиск цитат</n-h1>
 
     <div class="search-form">
       <NInput
@@ -105,20 +107,24 @@ async function onPageChange(newPage) {
       />
 
       <NButton size="large" type="primary" :loading="loading" @click="onSearch">
-        <NIcon>
+        <NIcon size="20">
           <SearchOutlined />
         </NIcon>
       </NButton>
     </div>
 
-    <NText depth="3" class="search-info">
-      Поиск работает с помощью ИИ: он определяет смысл запроса и подбирает похожие по смыслу цитаты,
-      даже если слова не совпадают точно.
-    </NText>
+    <n-collapse arrow-placement="right">
+      <n-collapse-item title="Подсказка" name="1">
+        <NText class="search-info">
+          Поиск работает с помощью ИИ: он определяет смысл запроса и подбирает похожие по смыслу цитаты,
+          даже если слова не совпадают точно. Ввод можно осуществлять на русском и английском языках.
+        </NText>
 
-    <NText depth="3" class="search-info">
-      Результаты отсортированы по релевантности — сначала самые подходящие по запросу.
-    </NText>
+        <NText class="search-info">
+          Результаты отсортированы по релевантности — сначала самые подходящие по запросу.
+        </NText>
+      </n-collapse-item>
+    </n-collapse>
 
     <NText depth="3" class="search-count"> Найдено цитат: {{ totalCount }} </NText>
 
@@ -143,6 +149,10 @@ async function onPageChange(newPage) {
 </template>
 
 <style lang="scss" scoped>
+.quotes-title {
+  margin-top: 20px;
+}
+
 .quotes-container {
   max-width: 720px;
   margin: 0 auto;
@@ -154,8 +164,8 @@ async function onPageChange(newPage) {
   margin-bottom: 20px;
 
   img {
-    width: 200px;
-    height: 200px;
+    width: 120px;
+    height: 120px;
     object-fit: contain;
   }
 }
@@ -164,6 +174,7 @@ async function onPageChange(newPage) {
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-bottom: 10px;
 
   &__input {
     width: 100%;
@@ -172,7 +183,7 @@ async function onPageChange(newPage) {
 
 .search-info {
   display: block;
-  margin-top: 12px;
+  margin-bottom: 12px;
   font-size: 14px;
   line-height: 1.5;
 }
@@ -190,12 +201,16 @@ async function onPageChange(newPage) {
 }
 
 @media (max-width: 768px) {
+  .quotes-title {
+    margin-top: 10px;
+  }
+
   .gold-boat-img {
-    margin-bottom: 20px;
+    margin-bottom: unset;
 
     img {
-      width: 150px;
-      height: 150px;
+      width: 120px;
+      height: 120px;
       object-fit: contain;
     }
   }

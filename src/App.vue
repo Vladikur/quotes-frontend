@@ -15,4 +15,10 @@ import { NMessageProvider } from 'naive-ui';
 .page {
   padding: 40px 20px;
 }
+
+@media (max-width: 768px) {
+  .page {
+    padding: 20px;
+  }
+}
 </style>

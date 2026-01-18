@@ -22,7 +22,6 @@ function normalizeForDisplay(text) {
     <div class="quote__head">
       <n-h4 class="mb-3">
         <span>{{ quote.author_en }}</span>
-        <span v-if="quote.dates_of_life_en">, {{ quote.dates_of_life_en }}</span>
       </n-h4>
 
       <n-text class="quote__source" depth="3" v-if="quote.source_en">
@@ -44,7 +43,6 @@ function normalizeForDisplay(text) {
     <div class="quote__head">
       <n-h4>
         <span>{{ quote.author_ru }}</span>
-        <span v-if="quote.dates_of_life_ru">, {{ quote.dates_of_life_ru }}</span>
       </n-h4>
 
       <n-text class="quote__source" depth="3" v-if="quote.source_ru">
