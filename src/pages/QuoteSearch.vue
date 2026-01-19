@@ -39,18 +39,18 @@ async function loadQuotes() {
   loading.value = true
 
   try {
-    const params = {
+    const data = {
       page: page.value,
       limit: pageSize.value
     }
 
     if (searchId.value) {
-      params.searchId = searchId.value
+      data.searchId = searchId.value
     } else if (search.value) {
-      params.search = search.value
+      data.search = search.value
     }
 
-    const res = await getQuotes(params)
+    const res = await getQuotes(data)
 
     quotes.value = res.data.data
     totalCount.value = res.data.count
