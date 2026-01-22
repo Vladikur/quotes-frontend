@@ -1,10 +1,14 @@
 <script setup>
-import { NCard, NDivider } from 'naive-ui';
+import { NCard, NDivider, NText } from 'naive-ui';
 
 const props = defineProps({
   quote: {
     type: Object,
     required: true
+  },
+  isDevMode: {
+    type: Boolean,
+    required: false
   }
 });
 
@@ -19,6 +23,9 @@ function normalizeForDisplay(text) {
 
 <template>
   <NCard class="quote">
+    <div v-if="isDevMode">
+      <NText class="dev-text"> Коэффициент совпадения: {{ Number(quote.score).toFixed(3) }} </NText>
+    </div>
     <div class="quote__head">
       <n-h4 class="mb-3">
         <span>{{ quote.author_en }}</span>

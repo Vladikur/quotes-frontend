@@ -25,6 +25,8 @@ const totalCount = ref(0)
 const page = ref(1)
 const pageSize = ref(20)
 const searchId = ref(null)
+const isDevMode = ref(false)
+const QueryEnDev = ref('')
 
 const message = useMessage()
 
@@ -54,6 +56,7 @@ async function loadQuotes() {
 
     quotes.value = res.data.data
     totalCount.value = res.data.count
+    QueryEnDev.value = res.data.queryEn
 
     if (res.data.searchId) {
       searchId.value = res.data.searchId
@@ -72,7 +75,12 @@ async function loadQuotes() {
   }
 }
 
-onMounted(loadQuotes)
+onMounted(() => {
+  const params = new URLSearchParams(window.location.search)
+  isDevMode.value = params.get('dev-mode') === 'true'
+
+  loadQuotes()
+})
 
 async function onSearch() {
   page.value = 1
@@ -104,6 +112,8 @@ async function onPageChange(newPage) {
         clearable
         @keyup.enter="onSearch"
         class="search-form__input"
+        id="search"
+        name="search"
       />
 
       <NButton size="large" type="primary" :loading="loading" @click="onSearch">
@@ -111,6 +121,10 @@ async function onPageChange(newPage) {
           <SearchOutlined />
         </NIcon>
       </NButton>
+    </div>
+
+    <div v-if="isDevMode">
+      <NText class="dev-text"> Переведенный запрос: {{ QueryEnDev }} </NText>
     </div>
 
     <n-collapse arrow-placement="right">
@@ -130,7 +144,7 @@ async function onPageChange(newPage) {
 
     <NSpin :show="loading" style="margin-top: 24px">
       <NSpace vertical size="large" v-if="quotes.length">
-        <CardQuote v-for="q in quotes" :key="q.id" :quote="q" />
+        <CardQuote v-for="q in quotes" :key="q.id" :quote="q" :is-dev-mode="isDevMode" />
       </NSpace>
 
       <NEmpty v-else description="Ничего не найдено" />
