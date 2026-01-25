@@ -26,9 +26,17 @@ export function deleteQuote(id) {
 }
 
 /**
- * Загрузка массива цитат
+ * Загрузить массив цитат
  * @param {Array<Object>} quotes
  */
 export function uploadQuotes(quotes) {
   return api.post('/quotes/bulk', { quotes });
+}
+
+/**
+ * Обновить массив цитат
+ * @param {Array<Object>} quotes
+ */
+export function updateQuotes(quotes) {
+  return api.post('/quotes/bulk/update', { quotes });
 }
