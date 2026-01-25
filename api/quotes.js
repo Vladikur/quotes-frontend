@@ -16,3 +16,19 @@ const api = axios.create({
 export function getQuotes(data) {
   return api.post('/quotes', data);
 }
+
+/**
+ * Удаление цитаты
+ * @param {string|number} id
+ */
+export function deleteQuote(id) {
+  return api.delete(`/quotes/${id}`)
+}
+
+/**
+ * Загрузка массива цитат
+ * @param {Array<Object>} quotes
+ */
+export function uploadQuotes(quotes) {
+  return api.post('/quotes/bulk', { quotes });
+}

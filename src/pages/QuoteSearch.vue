@@ -16,7 +16,7 @@ import {
 import { SearchOutlined } from '@vicons/material'
 
 import CardQuote from '../components/CardQuote.vue'
-import { getQuotes } from '../../api/quotes.js'
+import { getQuotes, deleteQuote } from '../../api/quotes'
 
 const search = ref('')
 const loading = ref(false)
@@ -26,7 +26,8 @@ const page = ref(1)
 const pageSize = ref(20)
 const searchId = ref(null)
 const isDevMode = ref(false)
-const QueryEnDev = ref('')
+const isEditorMode = ref(false)
+const lang = ref('')
 
 const message = useMessage()
 
@@ -56,7 +57,7 @@ async function loadQuotes() {
 
     quotes.value = res.data.data
     totalCount.value = res.data.count
-    QueryEnDev.value = res.data.queryEn
+    lang.value = res.data.lang
 
     if (res.data.searchId) {
       searchId.value = res.data.searchId
@@ -75,9 +76,34 @@ async function loadQuotes() {
   }
 }
 
+async function onDeleteQuote(id) {
+  try {
+    const res = await deleteQuote(id)
+
+    if (res.data.message) {
+      const messageType = res.data.success ? 'success' : 'error'
+
+      message[messageType](res.data.message)
+    }
+
+    // корректно обрабатываем крайний случай
+    if (quotes.value.length === 1 && page.value > 1) {
+      page.value--
+    }
+
+    searchId.value = null
+
+    await loadQuotes()
+  } catch {
+    message.error('Не удалось удалить цитату')
+  }
+}
+
 onMounted(() => {
   const params = new URLSearchParams(window.location.search)
+
   isDevMode.value = params.get('dev-mode') === 'true'
+  isEditorMode.value = params.get('edit-mode') === 'true'
 
   loadQuotes()
 })
@@ -97,12 +123,8 @@ async function onPageChange(newPage) {
 </script>
 
 <template>
-  <div class="quotes-container">
-    <div class="gold-boat-img">
-      <img src="/gold-boat.png" alt="Gold boat" />
-    </div>
-
-    <n-h1 class="quotes-title" style="text-align: center">Поиск цитат</n-h1>
+  <div class="container">
+    <n-h1 class="title">Поиск цитат</n-h1>
 
     <div class="search-form">
       <NInput
@@ -123,8 +145,10 @@ async function onPageChange(newPage) {
       </NButton>
     </div>
 
-    <div v-if="isDevMode">
-      <NText class="dev-text"> Переведенный запрос: {{ QueryEnDev }} </NText>
+    <div v-if="isDevMode && lang">
+      <div class="dev-text">
+        <NText> lang: {{ lang }} </NText>
+      </div>
     </div>
 
     <n-collapse arrow-placement="right">
@@ -144,7 +168,14 @@ async function onPageChange(newPage) {
 
     <NSpin :show="loading" style="margin-top: 24px">
       <NSpace vertical size="large" v-if="quotes.length">
-        <CardQuote v-for="q in quotes" :key="q.id" :quote="q" :is-dev-mode="isDevMode" />
+        <CardQuote
+          v-for="q in quotes"
+          :key="q.id"
+          :quote="q"
+          :is-dev-mode="isDevMode"
+          :is-editor-mode="isEditorMode"
+          @delete="onDeleteQuote"
+        />
       </NSpace>
 
       <NEmpty v-else description="Ничего не найдено" />
@@ -163,27 +194,6 @@ async function onPageChange(newPage) {
 </template>
 
 <style lang="scss" scoped>
-.quotes-title {
-  margin-top: 20px;
-}
-
-.quotes-container {
-  max-width: 720px;
-  margin: 0 auto;
-}
-
-.gold-boat-img {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-
-  img {
-    width: 120px;
-    height: 120px;
-    object-fit: contain;
-  }
-}
-
 .search-form {
   display: flex;
   align-items: center;
@@ -212,21 +222,5 @@ async function onPageChange(newPage) {
   display: flex;
   justify-content: center;
   margin-top: 32px;
-}
-
-@media (max-width: 768px) {
-  .quotes-title {
-    margin-top: 10px;
-  }
-
-  .gold-boat-img {
-    margin-bottom: unset;
-
-    img {
-      width: 120px;
-      height: 120px;
-      object-fit: contain;
-    }
-  }
 }
 </style>

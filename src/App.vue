@@ -1,12 +1,15 @@
 <script setup>
-import QuoteSearch from './pages/QuoteSearch.vue';
-import { NMessageProvider } from 'naive-ui';
+import { NMessageProvider } from 'naive-ui'
 </script>
 
 <template>
   <NMessageProvider>
     <div class="page">
-      <QuoteSearch />
+      <div class="gold-boat-img">
+        <img src="/gold-boat.png" alt="Gold boat" />
+      </div>
+
+      <router-view />
     </div>
   </NMessageProvider>
 </template>

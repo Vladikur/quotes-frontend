@@ -1,4 +1,5 @@
 <script setup>
+import { DeleteOutlineRound } from '@vicons/material'
 import { NCard, NDivider, NText } from 'naive-ui';
 
 const props = defineProps({
@@ -6,11 +7,11 @@ const props = defineProps({
     type: Object,
     required: true
   },
-  isDevMode: {
-    type: Boolean,
-    required: false
-  }
+  isDevMode: Boolean,
+  isEditorMode: Boolean,
 });
+
+const emit = defineEmits(['delete'])
 
 function normalizeForDisplay(text) {
   if (!text) return '';
@@ -23,9 +24,32 @@ function normalizeForDisplay(text) {
 
 <template>
   <NCard class="quote">
-    <div v-if="isDevMode">
-      <NText class="dev-text"> Коэффициент совпадения: {{ Number(quote.score).toFixed(3) }} </NText>
+    <div v-if="isEditorMode || isDevMode" class="quote__header">
+      <div v-if="isDevMode">
+        <div class="dev-text">
+          <NText> id: {{ quote.id }}, </NText>
+          <NText v-if="quote.score"> score: {{ Number(quote.score).toFixed(3) }} </NText>
+        </div>
+      </div>
+
+      <div v-if="isEditorMode" class="quote__actions">
+        <NPopconfirm
+          positive-text="Удалить"
+          negative-text="Отмена"
+          @positive-click="emit('delete', quote.id)"
+        >
+          <template #trigger>
+            <NButton type="error" size="small">
+              <NIcon size="18">
+                <DeleteOutlineRound />
+              </NIcon>
+            </NButton>
+          </template>
+          Вы уверены, что хотите удалить цитату?
+        </NPopconfirm>
+      </div>
     </div>
+
     <div class="quote__head">
       <n-h4 class="mb-3">
         <span>{{ quote.author_en }}</span>
@@ -71,6 +95,26 @@ function normalizeForDisplay(text) {
 <style lang="scss" scoped>
 .quote {
   background: var(--element-background);
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    width: 100%;
+    gap: 20px;
+
+    .dev-text {
+      margin: unset;
+    }
+  }
+
+  &__actions {
+    margin-left: auto;
+    display: flex;
+    gap: 10px;
+  }
+
   &__head {
     display: flex;
     justify-content: space-between;
