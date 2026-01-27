@@ -13,7 +13,8 @@ import {
   NCollapse,
   NCollapseItem,
 } from 'naive-ui'
-import { SearchOutlined } from '@vicons/material'
+import { SearchOutlined, AddCardOutlined } from '@vicons/material'
+import { useRouter } from 'vue-router'
 
 import CardQuote from '../components/CardQuote.vue'
 import { getQuotes, deleteQuote } from '../../api/quotes'
@@ -29,12 +30,13 @@ const isDevMode = ref(false)
 const isEditorMode = ref(false)
 const lang = ref('')
 
+const router = useRouter()
 const message = useMessage()
 
 function scrollToTop() {
   window.scrollTo({
     top: 0,
-    behavior: 'smooth'
+    behavior: 'smooth',
   })
 }
 
@@ -44,7 +46,7 @@ async function loadQuotes() {
   try {
     const data = {
       page: page.value,
-      limit: pageSize.value
+      limit: pageSize.value,
     }
 
     if (searchId.value) {
@@ -68,7 +70,6 @@ async function loadQuotes() {
 
       message[messageType](res.data.message)
     }
-
   } catch {
     message.error('Не удалось загрузить цитаты')
   } finally {
@@ -154,8 +155,9 @@ async function onPageChange(newPage) {
     <n-collapse arrow-placement="right">
       <n-collapse-item title="Подсказка" name="1">
         <NText class="search-info">
-          Поиск работает с помощью ИИ: он определяет смысл запроса и подбирает похожие по смыслу цитаты,
-          даже если слова не совпадают точно. Ввод можно осуществлять на русском и английском языках.
+          Поиск работает с помощью ИИ: он определяет смысл запроса и подбирает похожие по смыслу
+          цитаты, даже если слова не совпадают точно. Ввод можно осуществлять на русском и
+          английском языках.
         </NText>
 
         <NText class="search-info">
@@ -164,7 +166,20 @@ async function onPageChange(newPage) {
       </n-collapse-item>
     </n-collapse>
 
-    <NText depth="3" class="search-count"> Найдено цитат: {{ totalCount }} </NText>
+    <div class="search-count-container">
+      <NText depth="3" class="search-count"> Найдено цитат: {{ totalCount }} </NText>
+
+      <NButton
+        v-if="isEditorMode"
+        @click="router.push(`bulk?dev-mode=true&edit-mode=true`)"
+        type="info"
+        size="small"
+      >
+        <NIcon size="18">
+          <AddCardOutlined />
+        </NIcon>
+      </NButton>
+    </div>
 
     <NSpin :show="loading" style="margin-top: 24px">
       <NSpace vertical size="large" v-if="quotes.length">
@@ -203,6 +218,13 @@ async function onPageChange(newPage) {
   &__input {
     width: 100%;
   }
+}
+
+.search-count-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: center;
 }
 
 .search-info {

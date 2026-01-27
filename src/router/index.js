@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import QuoteSearch from '@/pages/QuoteSearch.vue'
+import BulkPage from '@/pages/BulkPage.vue'
 import EditPage from '@/pages/EditPage.vue'
 import NotFound from '@/pages/NotFound.vue'
 
@@ -12,9 +13,15 @@ const router = createRouter({
       component: QuoteSearch,
     },
     {
-      path: '/edit',
+      path: '/bulk',
+      name: 'bulk',
+      component: BulkPage,
+    },
+    {
+      path: '/edit/:id',
       name: 'edit',
       component: EditPage,
+      props: true,
     },
     {
       path: '/:pathMatch(.*)*',

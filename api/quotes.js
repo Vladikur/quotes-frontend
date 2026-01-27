@@ -18,14 +18,6 @@ export function getQuotes(data) {
 }
 
 /**
- * Удаление цитаты
- * @param {string|number} id
- */
-export function deleteQuote(id) {
-  return api.delete(`/quotes/${id}`)
-}
-
-/**
  * Загрузить массив цитат
  * @param {Array<Object>} quotes
  */
@@ -34,9 +26,26 @@ export function uploadQuotes(quotes) {
 }
 
 /**
- * Обновить массив цитат
- * @param {Array<Object>} quotes
+ * Обновить цитату
+ * @param {string|number} id
+ * @param {Object} quote
  */
-export function updateQuotes(quotes) {
-  return api.post('/quotes/bulk/update', { quotes });
+export function updateQuote(id, quote) {
+  return api.put(`/quotes/${id}`, quote);
+}
+
+/**
+ * Получить одну цитату по id
+ * @param {string|number} id
+ */
+export function getQuoteById(id) {
+  return api.get(`/quotes/${id}`);
+}
+
+/**
+ * Удаление цитаты
+ * @param {string|number} id
+ */
+export function deleteQuote(id) {
+  return api.delete(`/quotes/${id}`)
 }

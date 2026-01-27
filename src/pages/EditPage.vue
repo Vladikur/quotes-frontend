@@ -1,73 +1,70 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-import { NInput, NButton, NSpace, NText, useMessage } from 'naive-ui'
+import { useRoute, useRouter } from 'vue-router'
+import { NInput, NButton, NSpace, useMessage } from 'naive-ui'
 
-import { uploadQuotes, updateQuotes } from '../../api/quotes'
+import { getQuoteById, updateQuote } from '../../api/quotes'
+
+const route = useRoute()
+const router = useRouter()
+const message = useMessage()
 
 const rawInput = ref('')
 const loading = ref(false)
-const message = useMessage()
 const isEditorMode = ref(false)
 
-function validateQuotes(data, { requireId = false } = {}) {
-  if (!Array.isArray(data)) {
-    throw new Error('Ожидается массив объектов')
+const quoteId = route.params.id
+
+async function loadQuote() {
+  try {
+    loading.value = true
+
+    const { data } = await getQuoteById(quoteId)
+
+    // красиво кладём объект в textarea
+    rawInput.value = JSON.stringify({
+      author_en: data.data.author_en,
+      author_ru: data.data.author_ru,
+      text_en: data.data.text_en,
+      text_ru: data.data.text_ru,
+      source_en: data.data.source_en,
+      source_ru: data.data.source_ru,
+      robert_comment_en: data.data.robert_comment_en,
+      robert_comment_ru: data.data.robert_comment_ru,
+    }, null, 2)
+  } catch {
+    message.error('Не удалось загрузить цитату')
+  } finally {
+    loading.value = false
   }
-
-  data.forEach((item, index) => {
-    if (typeof item !== 'object' || item === null) {
-      throw new Error(`Элемент #${index + 1} не является объектом`)
-    }
-
-    if (requireId) {
-      if (item.id === undefined || item.id === null) {
-        throw new Error(`Элемент #${index + 1}: поле "id" обязательно при обновлении`)
-      }
-
-      const idNum = Number(item.id)
-      if (!Number.isInteger(idNum) || idNum <= 0) {
-        throw new Error(`Элемент #${index + 1}: некорректный id`)
-      }
-
-      item.id = idNum
-    }
-
-    const requiredFields = ['author_en', 'author_ru', 'text_en', 'text_ru']
-
-    requiredFields.forEach((field) => {
-      if (!item[field] || typeof item[field] !== 'string') {
-        throw new Error(`Элемент #${index + 1}: поле "${field}" обязательно и не может быть null`)
-      }
-    })
-  })
 }
 
-async function onUpload(isUpdate) {
-  loading.value = true
+async function onUpdate() {
+  let parsed
 
   try {
-    let parsed
+    parsed = JSON.parse(rawInput.value)
+  } catch {
+    message.error('Некорректный JSON')
+    return
+  }
 
-    try {
-      parsed = new Function(`return ${rawInput.value}`)()
-    } catch {
-      throw new Error('Некорректный формат массива')
-    }
+  try {
+    loading.value = true
 
-    validateQuotes(parsed, { requireId: isUpdate })
-
-    const res = isUpdate ? await updateQuotes(parsed) : await uploadQuotes(parsed)
+    const res = await updateQuote(quoteId, parsed)
 
     if (res.data.message) {
       const type = res.data.success ? 'success' : 'error'
       message[type](res.data.message)
     } else {
-      message.success(`Цитаты успешно ${isUpdate ? 'обновлены' : 'загружены'}`)
+      message.success(`Цитаты успешно загружены`)
     }
 
-    // rawInput.value = ''
-  } catch (err) {
-    message.error(err.message || 'Ошибка при загрузке / обновлении цитат')
+    if (res.data.success)
+      router.push('/?dev-mode=true&edit-mode=true')
+  } catch {
+    message.error('Ошибка при обновлении цитаты')
   } finally {
     loading.value = false
   }
@@ -75,30 +72,28 @@ async function onUpload(isUpdate) {
 
 onMounted(() => {
   const params = new URLSearchParams(window.location.search)
-
   isEditorMode.value = params.get('edit-mode') === 'true'
+
+  if (isEditorMode.value && quoteId) {
+    loadQuote()
+  }
 })
 </script>
 
 <template>
   <div v-if="isEditorMode" class="container">
-    <n-h1 class="title"> Добавление и обновление цитат </n-h1>
-
-    <NText depth="3" class="upload-hint">
-      Вставьте массив объектов с цитатами (JavaScript-формат)
-    </NText>
+    <n-h1 class="title"> Обновление цитаты </n-h1>
 
     <NInput
       v-model:value="rawInput"
       type="textarea"
-      placeholder="[{ author_en: '...', author_ru: '...', text_en: '...', text_ru: '...' }]"
+      placeholder="{ author_en: '...', author_ru: '...', text_en: '...', text_ru: '...' }"
       :autosize="{ minRows: 10 }"
       clearable
     />
 
     <NSpace justify="end" style="margin-top: 16px">
-      <NButton type="primary" dashed :loading="loading" @click="() => onUpload(true)"> Обновить существующие </NButton>
-      <NButton type="primary" :loading="loading" @click="() => onUpload(false)"> Загрузить новые </NButton>
+      <NButton type="primary" :loading="loading" @click="onUpdate"> Обновить </NButton>
     </NSpace>
   </div>
 </template>

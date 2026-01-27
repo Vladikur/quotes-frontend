@@ -1,6 +1,7 @@
 <script setup>
-import { DeleteOutlineRound } from '@vicons/material'
+import { DeleteOutlineRound, EditOutlined } from '@vicons/material'
 import { NCard, NDivider, NText } from 'naive-ui';
+import { useRouter } from 'vue-router'
 
 const props = defineProps({
   quote: {
@@ -11,6 +12,7 @@ const props = defineProps({
   isEditorMode: Boolean,
 });
 
+const router = useRouter()
 const emit = defineEmits(['delete'])
 
 function normalizeForDisplay(text) {
@@ -33,6 +35,12 @@ function normalizeForDisplay(text) {
       </div>
 
       <div v-if="isEditorMode" class="quote__actions">
+        <NButton @click="router.push(`edit/${quote.id}?dev-mode=true&edit-mode=true`)" type="info" size="small">
+          <NIcon size="18">
+            <EditOutlined />
+          </NIcon>
+        </NButton>
+
         <NPopconfirm
           positive-text="Удалить"
           negative-text="Отмена"
