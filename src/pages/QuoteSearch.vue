@@ -47,12 +47,8 @@ async function loadQuotes() {
     const data = {
       page: page.value,
       limit: pageSize.value,
-    }
-
-    if (searchId.value) {
-      data.searchId = searchId.value
-    } else if (search.value) {
-      data.search = search.value
+      searchId: searchId.value ? searchId.value : null,
+      search: search.value ? search.value : null,
     }
 
     const res = await getQuotes(data)
@@ -146,9 +142,9 @@ async function onPageChange(newPage) {
       </NButton>
     </div>
 
-    <div v-if="isDevMode && lang">
+    <div v-if="isDevMode">
       <div class="dev-text">
-        <NText> lang: {{ lang }} </NText>
+        <NText> lang: {{ lang }}, page: {{ page }}</NText>
       </div>
     </div>
 
