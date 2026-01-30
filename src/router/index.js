@@ -1,8 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import QuoteSearch from '@/pages/QuoteSearch.vue'
-import BulkPage from '@/pages/BulkPage.vue'
-import EditPage from '@/pages/EditPage.vue'
-import NotFound from '@/pages/NotFound.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -10,7 +6,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: QuoteSearch,
+      component: () => import('@/pages/QuoteSearch.vue'),
       meta: {
         titleKey: 'titles.search',
       },
@@ -18,7 +14,7 @@ const router = createRouter({
     {
       path: '/bulk',
       name: 'bulk',
-      component: BulkPage,
+      component: () => import('@/pages/BulkPage.vue'),
       meta: {
         titleKey: 'titles.addQuotes',
       },
@@ -26,7 +22,7 @@ const router = createRouter({
     {
       path: '/edit/:id',
       name: 'edit',
-      component: EditPage,
+      component: () => import('@/pages/EditPage.vue'),
       props: true,
       meta: {
         titleKey: 'titles.editQuote',
@@ -35,7 +31,7 @@ const router = createRouter({
     {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
-      component: NotFound,
+      component: () => import('@/pages/NotFound.vue'),
       meta: {
         titleKey: 'titles.notFound',
       },
