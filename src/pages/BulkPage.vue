@@ -1,30 +1,29 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { NInput, NButton, NSpace, NText, useMessage } from 'naive-ui'
+import { useI18n } from 'vue-i18n'
 
 import { uploadQuotes } from '../../api/quotes'
 
+const { t } = useI18n()
+const message = useMessage()
+
 const rawInput = ref('')
 const loading = ref(false)
-const message = useMessage()
 const isEditorMode = ref(false)
 
 function validateQuotes(data) {
   if (!Array.isArray(data)) {
-    throw new Error('Ожидается JSON-массив объектов')
+    throw new Error(t('errors.jsonArrayExpected'))
   }
 
-  data.forEach((item, index) => {
-    if (typeof item !== 'object' || item === null || Array.isArray(item)) {
-      throw new Error(`Элемент #${index + 1} не является объектом`)
-    }
-
+  data.forEach((item) => {
     const requiredFields = ['author_en', 'author_ru', 'text_en', 'text_ru']
 
     requiredFields.forEach((field) => {
       if (!item[field] || typeof item[field] !== 'string') {
         throw new Error(
-          `Элемент #${index + 1}: поле "${field}" обязательно и должно быть строкой`
+          `"${field}" ${t('errors.requiredFieldInvalid')}`
         )
       }
     })
@@ -40,21 +39,17 @@ async function onUpload() {
     try {
       parsed = JSON.parse(rawInput.value)
     } catch {
-      throw new Error('Некорректный JSON. Проверьте синтаксис')
+      throw new Error(t('errors.invalidJson'))
     }
 
     validateQuotes(parsed)
 
     const res = await uploadQuotes(parsed)
 
-    if (res.data?.message) {
-      const type = res.data.success ? 'success' : 'error'
-      message[type](res.data.message)
-    } else {
-      message.success('Цитаты успешно загружены')
-    }
-  } catch (err) {
-    message.error(err.message || 'Ошибка при загрузке цитат')
+    const type = res.data.success ? 'success' : 'error'
+    message[type](res.data.message)
+  } catch {
+    message.error(t('errors.unknown'))
   } finally {
     loading.value = false
   }
@@ -69,11 +64,8 @@ onMounted(() => {
 
 <template>
   <div v-if="isEditorMode" class="container">
-    <n-h1 class="title">Добавление новых цитат</n-h1>
-
-    <NText depth="3" class="upload-hint">
-      Вставьте JSON-массив объектов с цитатами
-    </NText>
+    <n-h1 class="title">{{ $t('bulkUpload.title') }}</n-h1>
+    <NText depth="3" class="upload-hint">{{ $t('bulkUpload.hint') }}</NText>
 
     <NInput
       v-model:value="rawInput"
@@ -92,7 +84,7 @@ onMounted(() => {
 
     <NSpace justify="end" style="margin-top: 16px">
       <NButton type="primary" :loading="loading" @click="onUpload">
-        Загрузить
+        {{ $t('bulkUpload.upload') }}
       </NButton>
     </NSpace>
   </div>

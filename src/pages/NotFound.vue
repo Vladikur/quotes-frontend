@@ -1,15 +1,19 @@
 <script setup>
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
+const { t } = useI18n()
 </script>
 
 <template>
   <div class="container not-found">
-    <n-h1 class="title">Страница не найдена</n-h1>
+    <n-h1 class="title">
+      {{ t('notFound.title') }}
+    </n-h1>
 
     <n-button type="primary" @click="router.push('/')">
-      На главную
+      {{ t('notFound.goHome') }}
     </n-button>
   </div>
 </template>

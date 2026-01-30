@@ -2,12 +2,14 @@
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { NInput, NButton, NSpace, useMessage } from 'naive-ui'
+import { useI18n } from 'vue-i18n'
 
 import { getQuoteById, updateQuote } from '../../api/quotes'
 
 const route = useRoute()
 const router = useRouter()
 const message = useMessage()
+const { t } = useI18n()
 
 const rawInput = ref('')
 const loading = ref(false)
@@ -33,7 +35,7 @@ async function loadQuote() {
       robert_comment_ru: data.data.robert_comment_ru,
     }, null, 2)
   } catch {
-    message.error('Не удалось загрузить цитату')
+    message.error(t('errors.unknown'))
   } finally {
     loading.value = false
   }
@@ -45,7 +47,7 @@ async function onUpdate() {
   try {
     parsed = JSON.parse(rawInput.value)
   } catch {
-    message.error('Некорректный JSON')
+    message.error(t('errors.invalidJson'))
     return
   }
 
@@ -54,17 +56,13 @@ async function onUpdate() {
 
     const res = await updateQuote(quoteId, parsed)
 
-    if (res.data.message) {
-      const type = res.data.success ? 'success' : 'error'
-      message[type](res.data.message)
-    } else {
-      message.success(`Цитаты успешно загружены`)
-    }
+    const type = res.data.success ? 'success' : 'error'
+    message[type](res.data.message)
 
     if (res.data.success)
       router.push('/?dev-mode=true&edit-mode=true')
   } catch {
-    message.error('Ошибка при обновлении цитаты')
+    message.error(t('errors.unknown'))
   } finally {
     loading.value = false
   }
@@ -82,7 +80,7 @@ onMounted(() => {
 
 <template>
   <div v-if="isEditorMode" class="container">
-    <n-h1 class="title"> Обновление цитаты </n-h1>
+    <n-h1 class="title"> {{ t('editQuote.title') }} </n-h1>
 
     <NInput
       v-model:value="rawInput"
@@ -93,7 +91,9 @@ onMounted(() => {
     />
 
     <NSpace justify="end" style="margin-top: 16px">
-      <NButton type="primary" :loading="loading" @click="onUpdate"> Обновить </NButton>
+      <NButton type="primary" :loading="loading" @click="onUpdate">
+        {{ t('editQuote.update') }}
+      </NButton>
     </NSpace>
   </div>
 </template>

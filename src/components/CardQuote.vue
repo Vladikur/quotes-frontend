@@ -42,8 +42,8 @@ function normalizeForDisplay(text) {
         </NButton>
 
         <NPopconfirm
-          positive-text="Удалить"
-          negative-text="Отмена"
+          :positive-text="$t('actions.delete')"
+          :negative-text="$t('actions.cancel')"
           @positive-click="emit('delete', quote.id)"
         >
           <template #trigger>
@@ -53,7 +53,7 @@ function normalizeForDisplay(text) {
               </NIcon>
             </NButton>
           </template>
-          Вы уверены, что хотите удалить цитату?
+          {{ $t('confirm.deleteQuote') }}
         </NPopconfirm>
       </div>
     </div>

@@ -11,22 +11,34 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: QuoteSearch,
+      meta: {
+        titleKey: 'titles.search',
+      },
     },
     {
       path: '/bulk',
       name: 'bulk',
       component: BulkPage,
+      meta: {
+        titleKey: 'titles.addQuotes',
+      },
     },
     {
       path: '/edit/:id',
       name: 'edit',
       component: EditPage,
       props: true,
+      meta: {
+        titleKey: 'titles.editQuote',
+      },
     },
     {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
       component: NotFound,
+      meta: {
+        titleKey: 'titles.notFound',
+      },
     },
   ],
 })
