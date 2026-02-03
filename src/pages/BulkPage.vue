@@ -2,15 +2,15 @@
 import { onMounted, ref } from 'vue'
 import { NInput, NButton, NSpace, NText, useMessage } from 'naive-ui'
 import { useI18n } from 'vue-i18n'
-
 import { uploadQuotes } from '../../api/quotes'
+import { useRouter } from 'vue-router'
 
 const { t } = useI18n()
 const message = useMessage()
+const router = useRouter()
 
 const rawInput = ref('')
 const loading = ref(false)
-const isEditorMode = ref(false)
 
 function validateQuotes(data) {
   if (!Array.isArray(data)) {
@@ -48,23 +48,21 @@ async function onUpload() {
 
     const type = res.data.success ? 'success' : 'error'
     message[type](res.data.message)
-  } catch {
-    message.error(t('errors.unknown'))
+  } catch (e) {
+    message.error(e.message ? e.message : t('errors.unknown'))
   } finally {
     loading.value = false
   }
 }
-
-onMounted(() => {
-  const params = new URLSearchParams(window.location.search)
-  isEditorMode.value = params.get('edit-mode') === 'true'
-})
 </script>
 
 
 <template>
-  <div v-if="isEditorMode" class="container">
+  <div class="container">
     <n-h1 class="title">{{ $t('bulkUpload.title') }}</n-h1>
+    <n-button type="info" style="margin-bottom: 20px;" @click="router.push('/')">
+      {{ t('notFound.goHome') }}
+    </n-button>
     <NText depth="3" class="upload-hint">{{ $t('bulkUpload.hint') }}</NText>
 
     <NInput

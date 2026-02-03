@@ -1,9 +1,31 @@
 import axios from 'axios';
+import { useAuthStore } from '@/stores/auth.js';
+// import router from '@/router';
 
 const api = axios.create({
   baseURL: import.meta.env.PROD ? '/api' : 'http://localhost:3000/api',
   timeout: 10000
 });
+
+api.interceptors.request.use((config) => {
+  const auth = useAuthStore();
+  if (auth.token) {
+    config.headers.Authorization = `Bearer ${auth.token}`;
+  }
+  return config;
+});
+
+// api.interceptors.response.use(
+//   (res) => res,
+//   (err) => {
+//     if (err.response?.status === 401) {
+//       const auth = useAuthStore()
+//       auth.logout()
+//       router.push('/login')
+//     }
+//     return Promise.reject(err)
+//   }
+// )
 
 /**
  * Поиск цитат
@@ -48,4 +70,12 @@ export function getQuoteById(id) {
  */
 export function deleteQuote(id) {
   return api.delete(`/quotes/${id}`)
+}
+
+/**
+ * Авторизация
+ * @param {Object} data
+ */
+export function login(data) {
+  return api.post('/auth/login', data);
 }

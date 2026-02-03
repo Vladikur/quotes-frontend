@@ -1,8 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '@/stores/auth.js';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('@/pages/LoginPage.vue'),
+      meta: {
+        titleKey: 'titles.login',
+      },
+    },
     {
       path: '/',
       name: 'home',
@@ -38,5 +47,16 @@ const router = createRouter({
     },
   ],
 })
+
+router.beforeEach((to) => {
+  const auth = useAuthStore();
+
+  if (
+    ['bulk', 'edit'].includes(to.name) &&
+    auth.role !== 'editor'
+  ) {
+    return { name: 'home' };
+  }
+});
 
 export default router

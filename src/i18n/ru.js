@@ -18,9 +18,18 @@ export default {
     title: 'Обновление цитаты',
     update: 'Обновить',
   },
+  login: {
+    title: 'Вход',
+    loginPlaceholder: 'Логин',
+    passwordPlaceholder: 'Пароль',
+    submit: 'Войти',
+  },
   notFound: {
     title: 'Страница не найдена',
     goHome: 'На главную',
+  },
+  header: {
+    logOut: 'Выйти',
   },
   errors: {
     deleteQuoteFailed: 'Не удалось удалить цитату',
@@ -29,9 +38,11 @@ export default {
     invalidJson: 'Некорректный JSON. Проверьте синтаксис',
     jsonArrayExpected: 'Ожидается JSON-массив объектов',
     requiredFieldInvalid: 'обязательно и должно быть строкой',
+    loginFailed: 'Неверный логин или пароль',
   },
   success: {
     deleteQuoteSuccess: 'Цитата успешно удалена',
+    loginSuccess: 'Вы успешно вошли',
   },
   actions: {
     delete: 'Удалить',
@@ -41,6 +52,7 @@ export default {
     deleteQuote: 'Вы уверены, что хотите удалить цитату?',
   },
   titles: {
+    login: 'Вход',
     search: 'Поиск цитат',
     notFound: 'Страница не найдена',
     editQuote: 'Обновление цитаты',

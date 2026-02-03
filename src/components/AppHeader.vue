@@ -1,8 +1,20 @@
 <script setup>
 import { NButton } from 'naive-ui'
 import { useLangStore } from '@/stores/lang'
+import { useAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 
 const langStore = useLangStore()
+
+const auth = useAuthStore()
+const router = useRouter()
+const { t } = useI18n()
+
+function onLogout() {
+  auth.logout()
+  router.push('/')
+}
 </script>
 
 <template>
@@ -24,6 +36,14 @@ const langStore = useLangStore()
             EN
           </NButton>
         </div>
+
+        <NButton
+          type="info"
+          @click="onLogout"
+          v-if="auth.role === 'editor'"
+        >
+          {{ $t('header.logOut') }}
+        </NButton>
       </div>
     </div>
   </header>
@@ -35,6 +55,7 @@ const langStore = useLangStore()
     display: flex;
     width: 100%;
     padding: 20px 0;
+    gap: 16px;
   }
 
   &__lang-switch {

@@ -17,9 +17,18 @@ export default {
     title: 'Edit quote',
     update: 'Update',
   },
+  login: {
+    title: 'Login',
+    loginPlaceholder: 'Username',
+    passwordPlaceholder: 'Password',
+    submit: 'Sign In',
+  },
   notFound: {
     title: 'Page not found',
     goHome: 'Go to home',
+  },
+  header: {
+    logOut: 'Logout',
   },
   errors: {
     deleteQuoteFailed: 'Failed to delete quote',
@@ -28,9 +37,11 @@ export default {
     invalidJson: 'Invalid JSON. Please check the syntax',
     jsonArrayExpected: 'A JSON array of objects is expected',
     requiredFieldInvalid: 'is required and must be a string',
+    loginFailed: 'Invalid username or password',
   },
   success: {
     deleteQuoteSuccess: 'Quote successfully deleted',
+    loginSuccess: 'Login successful',
   },
   actions: {
     delete: 'Delete',
@@ -40,6 +51,7 @@ export default {
     deleteQuote: 'Are you sure you want to delete this quote?',
   },
   titles: {
+    login: 'login',
     search: 'Quote search',
     notFound: 'Page not found',
     editQuote: 'Edit quote',

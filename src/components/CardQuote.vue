@@ -2,6 +2,9 @@
 import { DeleteOutlineRound, EditOutlined } from '@vicons/material'
 import { NCard, NDivider, NText } from 'naive-ui';
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+
+const auth = useAuthStore();
 
 const props = defineProps({
   quote: {
@@ -9,7 +12,6 @@ const props = defineProps({
     required: true
   },
   isDevMode: Boolean,
-  isEditorMode: Boolean,
 });
 
 const router = useRouter()
@@ -26,16 +28,16 @@ function normalizeForDisplay(text) {
 
 <template>
   <NCard class="quote">
-    <div v-if="isEditorMode || isDevMode" class="quote__header">
-      <div v-if="isDevMode">
+    <div v-if="auth.role === 'editor' || isDevMode" class="quote__header">
+      <div>
         <div class="dev-text">
           <NText> id: {{ quote.id }}, </NText>
           <NText v-if="quote.score"> score: {{ Number(quote.score).toFixed(3) }} </NText>
         </div>
       </div>
 
-      <div v-if="isEditorMode" class="quote__actions">
-        <NButton @click="router.push(`edit/${quote.id}?dev-mode=true&edit-mode=true`)" type="info" size="small">
+      <div v-if="auth.role === 'editor'" class="quote__actions">
+        <NButton @click="router.push(`edit/${quote.id}`)" type="info" size="small">
           <NIcon size="18">
             <EditOutlined />
           </NIcon>

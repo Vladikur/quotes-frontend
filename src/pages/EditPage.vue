@@ -13,7 +13,6 @@ const { t } = useI18n()
 
 const rawInput = ref('')
 const loading = ref(false)
-const isEditorMode = ref(false)
 
 const quoteId = route.params.id
 
@@ -61,26 +60,25 @@ async function onUpdate() {
 
     if (res.data.success)
       router.push('/?dev-mode=true&edit-mode=true')
-  } catch {
-    message.error(t('errors.unknown'))
+  } catch (e) {
+    message.error(e.message ? e.message : t('errors.unknown'))
   } finally {
     loading.value = false
   }
 }
 
 onMounted(() => {
-  const params = new URLSearchParams(window.location.search)
-  isEditorMode.value = params.get('edit-mode') === 'true'
-
-  if (isEditorMode.value && quoteId) {
-    loadQuote()
-  }
+  loadQuote()
 })
 </script>
 
 <template>
-  <div v-if="isEditorMode" class="container">
+  <div class="container">
     <n-h1 class="title"> {{ t('editQuote.title') }} </n-h1>
+
+    <n-button type="info" style="margin-bottom: 20px;" @click="router.push('/')">
+      {{ t('notFound.goHome') }}
+    </n-button>
 
     <NInput
       v-model:value="rawInput"

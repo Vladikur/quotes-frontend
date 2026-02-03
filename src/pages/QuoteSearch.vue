@@ -16,6 +16,7 @@ import {
 import { SearchOutlined, AddCardOutlined } from '@vicons/material'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { useAuthStore } from '@/stores/auth'
 
 import CardQuote from '../components/CardQuote.vue'
 import { getQuotes, deleteQuote } from '../../api/quotes'
@@ -28,13 +29,13 @@ const page = ref(1)
 const pageSize = ref(20)
 const searchId = ref(null)
 const isDevMode = ref(false)
-const isEditorMode = ref(false)
 const expandedNames = ref([])
 const lang = ref('')
 
 const router = useRouter()
 const message = useMessage()
 const { t } = useI18n()
+const auth = useAuthStore()
 
 function scrollToTop() {
   window.scrollTo({
@@ -92,7 +93,6 @@ onMounted(() => {
   const params = new URLSearchParams(window.location.search)
 
   isDevMode.value = params.get('dev-mode') === 'true'
-  isEditorMode.value = params.get('edit-mode') === 'true'
 
   const hintShown = localStorage.getItem('search-hint-shown')
 
@@ -141,7 +141,7 @@ async function onPageChange(newPage) {
       </NButton>
     </div>
 
-    <div v-if="isDevMode">
+    <div v-if="auth.role === 'editor' || isDevMode">
       <div class="dev-text">
         <NText> lang: {{ lang }}, page: {{ page }}</NText>
       </div>
@@ -158,8 +158,8 @@ async function onPageChange(newPage) {
       <NText depth="3" class="search-count"> {{ $t('searchQuotes.total') }} {{ totalCount }} </NText>
 
       <NButton
-        v-if="isEditorMode"
-        @click="router.push(`bulk?dev-mode=true&edit-mode=true`)"
+        v-if="auth.role === 'editor'"
+        @click="router.push(`bulk`)"
         type="info"
         size="small"
       >
@@ -176,7 +176,6 @@ async function onPageChange(newPage) {
           :key="q.id"
           :quote="q"
           :is-dev-mode="isDevMode"
-          :is-editor-mode="isEditorMode"
           @delete="onDeleteQuote"
         />
       </NSpace>
