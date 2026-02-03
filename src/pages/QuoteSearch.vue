@@ -151,6 +151,8 @@ async function onPageChange(newPage) {
       <n-collapse-item :title="$t('searchQuotes.hintTitle')" name="1">
         <NText class="search-info">{{ $t('searchQuotes.hintText1') }}</NText>
         <NText class="search-info">{{ $t('searchQuotes.hintText2') }}</NText>
+        <NText class="search-info">{{ $t('searchQuotes.hintText3') }}</NText>
+        <NText class="search-info">{{ $t('searchQuotes.hintText4') }}</NText>
       </n-collapse-item>
     </n-collapse>
 

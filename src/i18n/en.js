@@ -4,8 +4,10 @@ export default {
     placeholder: 'Enter topic or query',
     total: 'Quotes found:',
     hintTitle: 'Hint',
-    hintText1: 'The search uses artificial intelligence: it understands the meaning of your query and finds semantically similar quotes, even if the exact words don\'t match. You can enter queries in both Russian and English.',
-    hintText2: 'Results are sorted by relevance — the most suitable ones appear first.',
+    hintText1: 'Search is powered by artificial intelligence: it understands the meaning of your query and finds semantically similar quotes, even if the exact words do not match.',
+    hintText2: 'You can experiment with your query wording — for example, search for quotes by meeting topic, by synonyms, by author, and more.',
+    hintText3: 'Results are sorted by relevance, with the most relevant matches shown first.',
+    hintText4: 'Search supports input in both Russian and English.',
     empty: 'No results found',
   },
   bulkUpload: {
