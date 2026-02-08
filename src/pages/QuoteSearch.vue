@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, watch} from 'vue'
 import {
   NInput,
   NSpin,
@@ -29,6 +29,7 @@ const page = ref(1)
 const pageSize = ref(20)
 const searchId = ref(null)
 const isDevMode = ref(false)
+const isStrictSearch = ref(false)
 const expandedNames = ref([])
 const lang = ref('')
 
@@ -53,6 +54,7 @@ async function loadQuotes() {
       limit: pageSize.value,
       searchId: searchId.value ? searchId.value : null,
       search: search.value ? search.value : null,
+      strict: isStrictSearch.value,
     }
 
     const res = await getQuotes(data)
@@ -116,6 +118,11 @@ async function onPageChange(newPage) {
   await nextTick()
   scrollToTop()
 }
+
+watch(isStrictSearch, () => {
+  page.value = 1
+  searchId.value = null
+})
 </script>
 
 <template>
@@ -139,6 +146,12 @@ async function onPageChange(newPage) {
           <SearchOutlined />
         </NIcon>
       </NButton>
+    </div>
+
+    <div class="search-options">
+      <NCheckbox v-model:checked="isStrictSearch" @update:checked="onSearch">
+        {{ $t('searchQuotes.strictSearch') }}
+      </NCheckbox>
     </div>
 
     <div v-if="auth.role === 'editor' || isDevMode">
@@ -202,12 +215,16 @@ async function onPageChange(newPage) {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 4px;
 
   &__input {
     width: 100%;
   }
 }
+
+ .search-options {
+   margin-bottom: 10px;
+ }
 
 .search-count-container {
   display: flex;

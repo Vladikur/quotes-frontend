@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useAuthStore } from '@/stores/auth.js';
-// import router from '@/router';
+import router from '@/router';
 
 const api = axios.create({
   baseURL: import.meta.env.PROD ? '/api' : 'http://localhost:3000/api',
@@ -15,17 +15,17 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// api.interceptors.response.use(
-//   (res) => res,
-//   (err) => {
-//     if (err.response?.status === 401) {
-//       const auth = useAuthStore()
-//       auth.logout()
-//       router.push('/login')
-//     }
-//     return Promise.reject(err)
-//   }
-// )
+api.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    if (err.response?.status === 401) {
+      const auth = useAuthStore()
+      auth.logout()
+      router.push('/login')
+    }
+    return Promise.reject(err)
+  }
+)
 
 /**
  * Поиск цитат

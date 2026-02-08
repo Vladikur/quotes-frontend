@@ -2,6 +2,7 @@ export default {
   searchQuotes: {
     title: 'Search Quotes',
     placeholder: 'Enter topic or query',
+    strictSearch: 'Literal character search, no AI',
     total: 'Quotes found:',
     hintTitle: 'Hint',
     hintText1: 'Search is powered by artificial intelligence: it understands the meaning of your query and finds semantically similar quotes, even if the exact words do not match.',
