@@ -1,7 +1,11 @@
+import { uploadQuotes } from '../../api/quotes.js'
+
 export default {
   searchQuotes: {
     title: 'Search Quotes',
     placeholder: 'Enter topic or query',
+    uploadQuotes: 'Upload new quotes',
+    showDuplicates: 'Show possible duplicates',
     strictSearch: 'Literal character search, no AI',
     total: 'Quotes found:',
     hintTitle: 'Hint',

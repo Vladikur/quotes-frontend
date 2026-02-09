@@ -2,6 +2,8 @@ export default {
   searchQuotes: {
     title: 'Поиск цитат',
     placeholder: 'Введите тему запроса',
+    uploadQuotes: 'Загрузить новые цитаты',
+    showDuplicates: 'Показать возможные дубликаты',
     strictSearch: 'Поиск строго по символам, без ИИ',
     total: 'Найдено цитат:',
     hintTitle: 'Подсказка',

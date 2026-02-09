@@ -4,7 +4,7 @@ import router from '@/router';
 
 const api = axios.create({
   baseURL: import.meta.env.PROD ? '/api' : 'http://localhost:3000/api',
-  timeout: 10000
+  timeout: 30000
 });
 
 api.interceptors.request.use((config) => {
@@ -70,6 +70,13 @@ export function getQuoteById(id) {
  */
 export function deleteQuote(id) {
   return api.delete(`/quotes/${id}`)
+}
+
+/**
+ * Дубликаты цитат
+ */
+export function duplicatesQuotes() {
+  return api.post(`/quotes/duplicates`)
 }
 
 /**

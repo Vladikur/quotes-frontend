@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, nextTick, watch} from 'vue'
+import { ref, onMounted, nextTick, watch } from 'vue'
 import {
   NInput,
   NSpin,
@@ -13,13 +13,13 @@ import {
   NCollapse,
   NCollapseItem,
 } from 'naive-ui'
-import { SearchOutlined, AddCardOutlined } from '@vicons/material'
+import { SearchOutlined } from '@vicons/material'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 
 import CardQuote from '../components/CardQuote.vue'
-import { getQuotes, deleteQuote } from '../../api/quotes'
+import { getQuotes, deleteQuote, duplicatesQuotes } from '../../api/quotes'
 
 const search = ref('')
 const loading = ref(false)
@@ -29,6 +29,7 @@ const page = ref(1)
 const pageSize = ref(20)
 const searchId = ref(null)
 const isDevMode = ref(false)
+const deletingIds = ref(new Set())
 const isStrictSearch = ref(false)
 const expandedNames = ref([])
 const lang = ref('')
@@ -43,6 +44,23 @@ function scrollToTop() {
     top: 0,
     behavior: 'smooth',
   })
+}
+
+async function loadDuplicatesQuotes() {
+  loading.value = true
+
+  try {
+    const res = await duplicatesQuotes()
+
+    if (!res.data.success) throw new Error()
+
+    quotes.value = res.data.data
+    totalCount.value = res.data.count
+  } catch {
+    message.error(t('errors.loadQuotesFailed'))
+  } finally {
+    loading.value = false
+  }
 }
 
 async function loadQuotes() {
@@ -74,18 +92,16 @@ async function loadQuotes() {
 }
 
 async function onDeleteQuote(id) {
+  if (deletingIds.value.has(id)) return
+
+  deletingIds.value.add(id)
+
   try {
     const res = await deleteQuote(id)
 
     if (!res.data.success) throw new Error()
 
-    if (quotes.value.length === 1 && page.value > 1) page.value--
-
-    searchId.value = null
-
     message.success(t('success.deleteQuoteSuccess'))
-
-    await loadQuotes()
   } catch {
     message.error(t('errors.deleteQuoteFailed'))
   }
@@ -170,17 +186,18 @@ watch(isStrictSearch, () => {
     </n-collapse>
 
     <div class="search-count-container">
-      <NText depth="3" class="search-count"> {{ $t('searchQuotes.total') }} {{ totalCount }} </NText>
+      <NText depth="3" class="search-count">
+        {{ $t('searchQuotes.total') }} {{ totalCount }}
+      </NText>
+    </div>
 
-      <NButton
-        v-if="auth.role === 'editor'"
-        @click="router.push(`bulk`)"
-        type="info"
-        size="small"
-      >
-        <NIcon size="18">
-          <AddCardOutlined />
-        </NIcon>
+    <div class="search-editor-controls" v-if="auth.role === 'editor'">
+      <NButton @click="loadDuplicatesQuotes" type="primary" size="small">
+        {{ $t('searchQuotes.showDuplicates') }}
+      </NButton>
+
+      <NButton @click="router.push(`bulk`)" type="info" size="small">
+        {{ $t('searchQuotes.uploadQuotes') }}
       </NButton>
     </div>
 
@@ -191,6 +208,7 @@ watch(isStrictSearch, () => {
           :key="q.id"
           :quote="q"
           :is-dev-mode="isDevMode"
+          :is-deleting="deletingIds.has(q.id)"
           @delete="onDeleteQuote"
         />
       </NSpace>
@@ -222,14 +240,22 @@ watch(isStrictSearch, () => {
   }
 }
 
- .search-options {
-   margin-bottom: 10px;
- }
+.search-options {
+  margin-bottom: 10px;
+}
 
 .search-count-container {
   display: flex;
   justify-content: space-between;
   gap: 24px;
+  align-items: center;
+}
+
+.search-editor-controls {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
   align-items: center;
 }
 
@@ -250,5 +276,13 @@ watch(isStrictSearch, () => {
   display: flex;
   justify-content: center;
   margin-top: 32px;
+}
+
+@media (max-width: 768px) {
+  .search-editor-controls {
+    flex-direction: column;
+    align-items: unset;
+    justify-content: unset;
+  }
 }
 </style>

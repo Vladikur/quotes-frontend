@@ -12,6 +12,7 @@ const props = defineProps({
     required: true
   },
   isDevMode: Boolean,
+  isDeleting: Boolean,
 });
 
 const router = useRouter()
@@ -24,10 +25,17 @@ function normalizeForDisplay(text) {
     .replace(/\/n/g, '\n')        // исправляем ошибочный /n
     .replace(/\r\n|\r|\n/g, '\n'); // нормализуем переносы
 }
+
+function onDelete() {
+  emit('delete', props.quote.id)
+}
 </script>
 
 <template>
-  <NCard class="quote">
+  <NCard
+    class="quote"
+    :class="{ '_disabled': isDeleting }"
+  >
     <div v-if="auth.role === 'editor' || isDevMode" class="quote__header">
       <div>
         <div class="dev-text">
@@ -46,7 +54,7 @@ function normalizeForDisplay(text) {
         <NPopconfirm
           :positive-text="$t('actions.delete')"
           :negative-text="$t('actions.cancel')"
-          @positive-click="emit('delete', quote.id)"
+          @positive-click="onDelete"
         >
           <template #trigger>
             <NButton type="error" size="small">
@@ -105,6 +113,11 @@ function normalizeForDisplay(text) {
 <style lang="scss" scoped>
 .quote {
   background: var(--element-background);
+
+  &._disabled {
+    pointer-events: none;
+    opacity: 0.2;
+  }
 
   &__header {
     display: flex;
