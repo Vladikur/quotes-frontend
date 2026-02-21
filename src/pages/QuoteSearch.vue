@@ -127,11 +127,13 @@ async function onSearch() {
   searchId.value = null
 
   // GA4 search event
-  window.dataLayer = window.dataLayer || []
-  window.dataLayer.push({
-    event: 'search',
-    search_term: search.value || '',
-  })
+  if (search.value) {
+    window.dataLayer = window.dataLayer || []
+    window.dataLayer.push({
+      event: 'search',
+      search_term: search.value,
+    })
+  }
 
   await loadQuotes()
 }
