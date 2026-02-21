@@ -125,9 +125,10 @@ onMounted(() => {
 async function onSearch() {
   page.value = 1
   searchId.value = null
+  const term = search.value?.trim()
 
   // GA4 search event
-  if (search.value) {
+  if (term) {
     window.dataLayer = window.dataLayer || []
     window.dataLayer.push({
       event: 'search',
