@@ -14,7 +14,7 @@ import {
   NCollapseItem,
 } from 'naive-ui'
 import { SearchOutlined } from '@vicons/material'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 
@@ -34,16 +34,42 @@ const isStrictSearch = ref(false)
 const expandedNames = ref([])
 const lang = ref('')
 
+const route = useRoute()
 const router = useRouter()
 const message = useMessage()
 const { t } = useI18n()
 const auth = useAuthStore()
+
+let isSyncingUrl = false
 
 function scrollToTop() {
   window.scrollTo({
     top: 0,
     behavior: 'smooth',
   })
+}
+
+function readRouteState(query) {
+  return {
+    search: typeof query.q === 'string' ? query.q : '',
+    page: Number(query.page) > 0 ? Number(query.page) : 1,
+    strict: query.strict === '1',
+  }
+}
+
+function buildQuery() {
+  const query = {}
+
+  if (search.value) query.q = search.value
+  if (isStrictSearch.value) query.strict = '1'
+  if (page.value > 1) query.page = String(page.value)
+
+  return query
+}
+
+function syncUrl() {
+  isSyncingUrl = true
+  router.push({ query: buildQuery() }).catch(() => {})
 }
 
 async function loadDuplicatesQuotes() {
@@ -119,6 +145,11 @@ onMounted(() => {
     localStorage.setItem('search-hint-shown', 'true')
   }
 
+  const state = readRouteState(route.query)
+  search.value = state.search
+  page.value = state.page
+  isStrictSearch.value = state.strict
+
   loadQuotes()
 })
 
@@ -137,6 +168,7 @@ async function onSearch() {
   }
 
   await loadQuotes()
+  syncUrl()
 }
 
 async function onPageChange(newPage) {
@@ -144,12 +176,37 @@ async function onPageChange(newPage) {
   await loadQuotes()
   await nextTick()
   scrollToTop()
+  syncUrl()
 }
 
 watch(isStrictSearch, () => {
   page.value = 1
   searchId.value = null
 })
+
+// Keep search state, page and results in sync with browser back/forward navigation
+watch(
+  () => route.query,
+  async (query) => {
+    if (isSyncingUrl) {
+      isSyncingUrl = false
+      return
+    }
+
+    const state = readRouteState(query)
+    const filtersChanged = state.search !== search.value || state.strict !== isStrictSearch.value
+
+    if (filtersChanged) searchId.value = null
+
+    search.value = state.search
+    isStrictSearch.value = state.strict
+    page.value = state.page
+
+    await loadQuotes()
+    await nextTick()
+    scrollToTop()
+  },
+)
 </script>
 
 <template>
